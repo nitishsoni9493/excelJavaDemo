@@ -3,15 +3,15 @@ package com.ctl.aprilia.report.ExcelReporting.Converter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 public class ResultSetToJson {
-
-	public static JSONArray convertResultSetIntoJSON(SqlRowSet results) throws Exception {
-		JSONArray jsonArray = new JSONArray();
+	
+	public static JSONObject convertResultSetIntoJSON(String sql, JdbcTemplate jdbcTemplate) throws Exception {
+		JSONObject jsonArray = new JSONObject();
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
 		while (results.next()) {
 			int total_rows = results.getMetaData().getColumnCount();
 			JSONObject obj = new JSONObject();
@@ -31,9 +31,9 @@ public class ResultSetToJson {
 				if (obj.has(columnName)) {
 					columnName += "1";
 				}
-				obj.put(columnName, columnValue);
+				obj.put(columnName.toUpperCase(), columnValue);
 			}
-			jsonArray.put(obj);
+			jsonArray.put(obj.getString("CUST_CODE"),obj);
 		}
 		return jsonArray;
 	}
